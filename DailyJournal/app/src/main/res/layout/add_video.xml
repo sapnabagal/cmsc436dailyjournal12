@@ -3,19 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <ImageView
-        android:id="@+id/image"
+
+    <VideoView
+        android:id="@+id/video"
         android:layout_width="160dp"
-        android:layout_height="85dp"
-        android:contentDescription="test image 1"
-        android:padding="8dp"
-        android:scaleType="fitXY" />
+        android:layout_height="85dp" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/image" >
+        android:layout_toRightOf="@+id/video" >
 
         <TextView
             android:id="@+id/image_caption"
