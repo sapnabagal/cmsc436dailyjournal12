@@ -6,21 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/day"
-        android:layout_width="370dp"
-        android:layout_height="38dp"
-        android:gravity="center"
-        android:text="November 24, 2020"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.022" />
 
+    <com.kizitonwose.calendarview.CalendarView
+        android:id="@+id/exSevenCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cv_hasBoundaries="false"
+        app:cv_inDateStyle="none"
+        app:cv_outDateStyle="none"
+        app:cv_maxRowCount="1"
+        app:cv_orientation="horizontal"
+        app:cv_scrollMode="continuous"
+        app:cv_dayViewResource="@layout/calendar_day"
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
