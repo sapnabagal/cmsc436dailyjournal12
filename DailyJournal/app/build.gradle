@@ -52,6 +52,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     //for calendar
     implementation 'com.github.kizitonwose:CalendarView:0.4.5'
+    //for recycler view
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    //for card view
+    implementation "androidx.cardview:cardview:1.0.0"
 
 
 
