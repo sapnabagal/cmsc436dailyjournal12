@@ -27,7 +27,7 @@ import java.util.*
 
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnItemClickListener{
     public lateinit var addFab: FloatingActionButton
     public lateinit var audioFab: FloatingActionButton
     public lateinit var mediaFab: FloatingActionButton
@@ -43,13 +43,13 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var calendarView: CalendarView
-    private val events = mutableMapOf<LocalDate, List<TestData>>()
-    private var eventAdapter = Adapter()
+    private val events = mutableMapOf<LocalDate, List<ListItem>>()
+    private var eventAdapter = Adapter(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //adds a event to the first day
-        events[selectedDate] = events[selectedDate].orEmpty().plus(TestData(R.drawable.media, "THIS IS A TEST"))
+        events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST"))
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(this)
 
@@ -81,13 +81,34 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "Fab is clicked", Toast.LENGTH_SHORT).show()
         }
         textFab.setOnClickListener {
-            //to add events we add a event to the day that the event is on
-            //I will eventually make it so you can different types of media to the recycler view
-            //this is probably going to be done by bundling the audio, video, and text data classes into a abstract class or interface with a identifier called date
-            //from there each date would have a queue of those classes based on the date
-            events[selectedDate] = events[selectedDate].orEmpty().plus(TestData(R.drawable.media, "THIS IS A TEST"))
+            //TODO: create text editor activity to edit text
+            events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("This is Text"))
             updateAdapterForDate(selectedDate)
+            audioFab.hide()
+            mediaFab.hide()
+            textFab.hide()
+            allFabsVisible = false
 
+        }
+        audioFab.setOnClickListener {
+            //TODO: open activity to record audio
+            events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType())
+            updateAdapterForDate(selectedDate)
+            audioFab.hide()
+            mediaFab.hide()
+            textFab.hide()
+            allFabsVisible = false
+
+        }
+        mediaFab.setOnClickListener{
+            //TODO: open activity to upload photo/video
+            //this will create either a audio or video data entry depending on what the user selects
+            events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(R.drawable.media))
+            updateAdapterForDate(selectedDate)
+            audioFab.hide()
+            mediaFab.hide()
+            textFab.hide()
+            allFabsVisible = false
         }
 
         //this is for the calendar day UI size
@@ -181,5 +202,16 @@ class MainActivity : AppCompatActivity() {
             dataList.addAll(this@MainActivity.events[date].orEmpty())
             notifyDataSetChanged()
         }
+    }
+
+    override fun onItemClick(data : ListItem) {
+        //TODO: determine what the item data is based on the ListItemType then create a dialgoue to view it, or delete it
+        // possibly add edit for text but idk
+        Toast.makeText(this@MainActivity, data.getListItemType().toString(), Toast.LENGTH_SHORT).show()
+        if(data.getListItemType() == ListItem.TYPE_TEXT){
+            (data as TextType).inputText = Calendar.getInstance().time.toString()
+            eventAdapter.notifyDataSetChanged()
+        }
+
     }
 }

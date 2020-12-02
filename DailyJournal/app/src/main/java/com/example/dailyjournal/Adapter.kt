@@ -6,27 +6,50 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.add_image.view.*
 
-class Adapter() : RecyclerView.Adapter<Adapter.ViewHolder>() {
-    val dataList= mutableListOf<TestData>()
+class Adapter(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<ViewHolder>() {
+    val dataList= mutableListOf<ListItem>()
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.add_image, parent, false)
-        return ViewHolder(itemView)
+        when(viewType){
+            ListItem.TYPE_PIC ->{
+                val itemView = LayoutInflater.from(parent.context).inflate(R.layout.add_image, parent, false)
+                return ViewHolderPic(itemView)
+
+            }
+            ListItem.TYPE_AUDIO->{
+                val itemView = LayoutInflater.from(parent.context).inflate(R.layout.add_audio, parent, false)
+                return ViewHolderAudio(itemView)
+
+            }
+            ListItem.TYPE_VIDEO->{
+                val itemView = LayoutInflater.from(parent.context).inflate(R.layout.add_video, parent, false)
+                return ViewHolderPic(itemView)
+
+            }
+            else -> {
+                val itemView = LayoutInflater.from(parent.context).inflate(R.layout.add_text, parent, false)
+                return ViewHolderText(itemView)
+            }
+
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return dataList[position].getListItemType()
+
     }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = dataList[position]
-        holder.imageView.setImageResource(currentItem.imageResource)
-        holder.textView.text = currentItem.text1
+        //holder.imageView.setImageResource(currentItem.imageResource)
+        //holder.textView.text = currentItem.text1
+        holder.bindType(currentItem)
+        holder.itemView.setOnClickListener{
+            itemClickListener.onItemClick(currentItem)
+        }
     }
 
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val imageView = itemView.image
-        val textView = itemView.image_caption
-
-        //holds references to row layout
-
-    }
     override fun getItemCount(): Int {
         return dataList.size
     }
