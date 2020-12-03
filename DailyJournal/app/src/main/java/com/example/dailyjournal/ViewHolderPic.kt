@@ -13,7 +13,7 @@ class ViewHolderPic(itemView: View) : ViewHolder(itemView) {
     }
     override fun bindType(item: ListItem) {
         var userImage = item as PicType
-        image.setImageResource(userImage.image)
+        image.setImageURI(userImage.image)
     }
 
 }

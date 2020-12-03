@@ -2,12 +2,12 @@ package com.example.dailyjournal
 
 import android.net.Uri
 
-class PicType(imageUri: Uri): ListItem{
+class VidType(imageUri: Uri): ListItem{
 
-    var image : Uri = imageUri
+    var video : Uri = imageUri
 
     override fun getListItemType(): Int {
-        return ListItem.TYPE_PIC
+        return ListItem.TYPE_VIDEO
     }
 
 

@@ -1,24 +1,33 @@
 package com.example.dailyjournal
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.os.Parcelable
+import android.provider.MediaStore
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
-import android.view.WindowManager
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
-import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.utils.Size
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -26,15 +35,17 @@ import java.time.temporal.WeekFields
 import java.util.*
 
 
-
 class MainActivity : AppCompatActivity(), OnItemClickListener{
     public lateinit var addFab: FloatingActionButton
     public lateinit var audioFab: FloatingActionButton
     public lateinit var mediaFab: FloatingActionButton
+    //public lateinit var videoFab: FloatingActionButton
     public lateinit var textFab: FloatingActionButton
     public var allFabsVisible: Boolean = false
 
     private var selectedDate = LocalDate.now()
+    private var imageUri: Uri? = null
+    private var imgPath: String = ""
 
     private val dateFormatter = DateTimeFormatter.ofPattern("dd")
     private val dayFormatter = DateTimeFormatter.ofPattern("EEE")
@@ -101,15 +112,73 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
 
         }
         mediaFab.setOnClickListener{
-            //TODO: open activity to upload photo/video
+            //TODO: open activity to upload photo
             //this will create either a audio or video data entry depending on what the user selects
-            events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(R.drawable.media))
+
+            try {
+                if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this@MainActivity,
+                        arrayOf<String>(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ),
+                        PICK_IMAGE_ROM_GALLERY
+                    )
+                } else {
+
+                    var intent = Intent()
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Pick an image"), PICK_IMAGE_ROM_GALLERY)
+
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            //events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(R.drawable.media))
             updateAdapterForDate(selectedDate)
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
             allFabsVisible = false
         }
+
+        /*
+        videoFab.setOnClickListener{
+            //TODO: open activity to upload video
+            //this will create either a audio or video data entry depending on what the user selects
+
+            try {
+                if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this@MainActivity,
+                        arrayOf<String>(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ),
+                        PICK_VIDEO_FROM_GALLERY
+                    )
+                } else {
+
+                    var intent = Intent()
+                    intent.setType("video/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Pick a video"), PICK_VIDEO_FROM_GALLERY)
+
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            //events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(R.drawable.media))
+            updateAdapterForDate(selectedDate)
+            audioFab.hide()
+            mediaFab.hide()
+            textFab.hide()
+            allFabsVisible = false
+        }
+        */
+         */
 
         //this is for the calendar day UI size
         val dm = DisplayMetrics()
@@ -214,4 +283,48 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         }
 
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.i(TAG, "in onActivity Result $resultCode")
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            PICK_IMAGE_ROM_GALLERY -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.i(TAG, "image result OK")
+                    if (data == null) {
+                        Log.i(TAG, "data returned is null")
+                        return;
+                    }
+                    var imageData : Uri = data.data!!;
+                    events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData))
+                    updateAdapterForDate(selectedDate)
+                }
+            }
+
+            PICK_VIDEO_FROM_GALLERY -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.i(TAG, "video result OK")
+                    if (data == null) {
+                        Log.i(TAG, "data returned is null")
+                        return;
+                    }
+                    var videoData : Uri = data.data!!;
+                    events[selectedDate] = events[selectedDate].orEmpty().plus(VidType(videoData))
+                    updateAdapterForDate(selectedDate)
+                }
+            }
+        }
+    }
+
+    companion object {
+
+        private val TAG = "Get-Image"
+        val PICK_IMAGE_ROM_GALLERY = 2
+        val PICK_VIDEO_FROM_GALLERY = 3
+        val RES_IMAGE = 100
+
+    }
+
+
+
 }

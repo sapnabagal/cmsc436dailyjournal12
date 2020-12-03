@@ -10,8 +10,8 @@
 
     <VideoView
         android:id="@+id/video"
-        android:layout_width="160dp"
-        android:layout_height="85dp" />
+        android:layout_width="150dp"
+        android:layout_height="100dp" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         android:layout_toRightOf="@+id/video" >
 
         <TextView
-            android:id="@+id/image_caption"
+            android:id="@+id/video_caption"
             android:layout_width="237dp"
             android:layout_height="67dp"
             android:text="This is a video"
