@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
     public lateinit var addFab: FloatingActionButton
     public lateinit var audioFab: FloatingActionButton
     public lateinit var mediaFab: FloatingActionButton
-    //public lateinit var videoFab: FloatingActionButton
+    public lateinit var videoFab: FloatingActionButton
     public lateinit var textFab: FloatingActionButton
     public var allFabsVisible: Boolean = false
 
@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
 
 
 
+
     private lateinit var calendarView: CalendarView
     private val events = mutableMapOf<LocalDate, List<ListItem>>()
     private var eventAdapter = Adapter(this)
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //adds a event to the first day
-        events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST"))
+        events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(this)
 
@@ -71,20 +72,24 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         audioFab = findViewById<FloatingActionButton>(R.id.audio)
         textFab= findViewById<FloatingActionButton>(R.id.text)
         mediaFab= findViewById<FloatingActionButton>(R.id.media)
+        videoFab= findViewById<FloatingActionButton>(R.id.video)
 
         audioFab.visibility = View.GONE
         mediaFab.visibility = View.GONE
         textFab.visibility = View.GONE
+        videoFab.visibility = View.GONE
         addFab.setOnClickListener{
             if(!allFabsVisible){
                 audioFab.show()
                 mediaFab.show()
                 textFab.show()
+                videoFab.show()
                 allFabsVisible = true
             }else{
                 audioFab.hide()
                 mediaFab.hide()
                 textFab.hide()
+                videoFab.hide()
                 allFabsVisible = false
 
 
@@ -93,21 +98,23 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         }
         textFab.setOnClickListener {
             //TODO: create text editor activity to edit text
-            events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("This is Text"))
+            events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("This is Text", selectedDate))
             updateAdapterForDate(selectedDate)
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
+            videoFab.hide()
             allFabsVisible = false
 
         }
         audioFab.setOnClickListener {
             //TODO: open activity to record audio
-            events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType())
+            events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(selectedDate))
             updateAdapterForDate(selectedDate)
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
+            videoFab.hide()
             allFabsVisible = false
 
         }
@@ -141,10 +148,11 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
+            videoFab.hide()
             allFabsVisible = false
         }
 
-        /*
+
         videoFab.setOnClickListener{
             //TODO: open activity to upload video
             //this will create either a audio or video data entry depending on what the user selects
@@ -175,10 +183,9 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
+            videoFab.hide()
             allFabsVisible = false
         }
-        */
-         */
 
         //this is for the calendar day UI size
         val dm = DisplayMetrics()
@@ -273,14 +280,22 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         }
     }
 
+    private fun deleteEvent(data :  ListItem){
+        val date = data.getDate()
+        events[date] = events[date].orEmpty().minus(data)
+        updateAdapterForDate(date)
+
+
+    }
     override fun onItemClick(data : ListItem) {
         //TODO: determine what the item data is based on the ListItemType then create a dialgoue to view it, or delete it
         // possibly add edit for text but idk
-        Toast.makeText(this@MainActivity, data.getListItemType().toString(), Toast.LENGTH_SHORT).show()
-        if(data.getListItemType() == ListItem.TYPE_TEXT){
-            (data as TextType).inputText = Calendar.getInstance().time.toString()
-            eventAdapter.notifyDataSetChanged()
-        }
+        //Toast.makeText(this@MainActivity, data.getListItemType().toString(), Toast.LENGTH_SHORT).show()
+        //if(data.getListItemType() == ListItem.TYPE_TEXT){
+        //    (data as TextType).inputText = Calendar.getInstance().time.toString()
+        //    eventAdapter.notifyDataSetChanged()
+        //}
+        deleteEvent(data)
 
     }
 
@@ -296,7 +311,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
                         return;
                     }
                     var imageData : Uri = data.data!!;
-                    events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData))
+                    events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData, selectedDate))
                     updateAdapterForDate(selectedDate)
                 }
             }
@@ -309,7 +324,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
                         return;
                     }
                     var videoData : Uri = data.data!!;
-                    events[selectedDate] = events[selectedDate].orEmpty().plus(VidType(videoData))
+                    events[selectedDate] = events[selectedDate].orEmpty().plus(VidType(videoData, selectedDate))
                     updateAdapterForDate(selectedDate)
                 }
             }

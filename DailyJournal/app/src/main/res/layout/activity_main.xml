@@ -75,6 +75,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:rippleColor="#FFFF" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/video"
+        app:backgroundTint="#D3D3D3"
+        app:fabSize="mini"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/media"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:rippleColor="#FFFF" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,7 +97,7 @@
         app:fabSize="mini"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/media"
+        app:layout_constraintBottom_toTopOf="@+id/video"
         app:layout_constraintEnd_toEndOf="parent"
         app:rippleColor="#FFFF" />
 

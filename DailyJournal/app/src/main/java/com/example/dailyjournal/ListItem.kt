@@ -1,8 +1,11 @@
 package com.example.dailyjournal
 
+import java.time.LocalDate
+
 interface ListItem {
 
     fun getListItemType(): Int
+    fun getDate(): LocalDate
 
     companion object {
         const val TYPE_AUDIO = 1
