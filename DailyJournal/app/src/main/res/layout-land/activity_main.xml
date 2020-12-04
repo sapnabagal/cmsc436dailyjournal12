@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <com.kizitonwose.calendarview.CalendarView
+            android:id="@+id/exSevenCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cv_dayViewResource="@layout/calendar_day"
+            app:cv_hasBoundaries="false"
+            app:cv_inDateStyle="none"
+            app:cv_maxRowCount="1"
+            app:cv_orientation="horizontal"
+            app:cv_outDateStyle="none"
+            app:cv_scrollMode="continuous"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp"
+            android:nestedScrollingEnabled="false" />
+
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/add"
+        app:fabSize="normal"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:clickable="true"
+        app:rippleColor="#FFFF" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/audio"
+        app:backgroundTint="#D3D3D3"
+        app:fabSize="mini"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:rippleColor="#FFFF" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/media"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/media"
+        app:backgroundTint="#D3D3D3"
+        app:fabSize="mini"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/audio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:rippleColor="#FFFF" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/video"
+        app:backgroundTint="#D3D3D3"
+        app:fabSize="mini"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/media"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:rippleColor="#FFFF" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/text"
+        app:backgroundTint="#D3D3D3"
+        app:fabSize="mini"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/video"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:rippleColor="#FFFF" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

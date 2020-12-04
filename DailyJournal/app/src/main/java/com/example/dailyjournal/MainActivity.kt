@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -28,6 +30,7 @@ import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.Size
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -54,7 +57,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
 
 
 
-    private lateinit var calendarView: CalendarView
+        private lateinit var calendarView: CalendarView
     private val events = mutableMapOf<LocalDate, List<ListItem>>()
     private var eventAdapter = Adapter(this)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -190,11 +193,18 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         //this is for the calendar day UI size
         val dm = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(dm)
-       calendarView.apply{
-           val dayWidth = dm.widthPixels / 5
-           val dayHeight = (dayWidth * 1.25).toInt()
-           daySize = Size(dayWidth,dayHeight)
+        var dayWidth : Int
+        var dayHeight: Int
+        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            dayWidth = dm.widthPixels / 10
+            dayHeight = (dayWidth * 1.25).toInt()
+        }else{
+            dayWidth = dm.widthPixels / 5
+            dayHeight = (dayWidth * 1.25).toInt()
 
+        }
+        calendarView.apply{
+            daySize = Size(dayWidth,dayHeight)
        }
         if(savedInstanceState == null){
             //this is where the recyclerView gets updated
@@ -203,12 +213,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
                 updateAdapterForDate(selectedDate)
             }
         }
-        val currentMonth = YearMonth.now()
-        val firstMonth = currentMonth
-        val lastMonth = currentMonth
-        val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
-        calendarView.setup(firstMonth, lastMonth, firstDayOfWeek)
-        calendarView.scrollToDate(LocalDate.now())
 
 
         class DayViewContainer(view: View) : ViewContainer(view) {
@@ -227,7 +231,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
                     if (firstDay == day) {
                         // If the first date on screen was clicked, we scroll to the date to ensure
                         // it is fully visible if it was partially off the screen when clicked.
-                        calendarView.smoothScrollToDate(day.date.minusDays(4))
+                        calendarView.smoothScrollToDate(day.date)
                     } else if (lastDay == day) {
                         // If the last date was clicked, we scroll to 4 days ago, this forces the
                         // clicked date to be fully visible if it was partially off the screen.
@@ -270,6 +274,11 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
                 container.bind(day)
             }
         }
+        val currentMonth = YearMonth.now()
+        val lastMonth = currentMonth.plusMonths(3)
+        //val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek.rand
+        calendarView.setup(currentMonth, lastMonth, DayOfWeek.values().random())
+        //calendarView.scrollToDate(LocalDate.now())
     }
     private fun updateAdapterForDate(date: LocalDate) {
         //this function is used to clear the recycler view when a new date is selected then add the events from that day
