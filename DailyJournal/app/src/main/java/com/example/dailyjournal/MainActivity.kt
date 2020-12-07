@@ -14,14 +14,21 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.dailyjournal.databinding.ActivityCalendarBinding
+import com.example.dailyjournal.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
@@ -38,7 +45,7 @@ import java.time.temporal.WeekFields
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), OnItemClickListener{
+class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
     public lateinit var addFab: FloatingActionButton
     public lateinit var audioFab: FloatingActionButton
     public lateinit var mediaFab: FloatingActionButton
@@ -46,7 +53,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
     public lateinit var textFab: FloatingActionButton
     public var allFabsVisible: Boolean = false
 
-    private var selectedDate = LocalDate.now()
+    private lateinit var selectedDate : LocalDate
     private var imageUri: Uri? = null
     private var imgPath: String = ""
 
@@ -60,22 +67,26 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         private lateinit var calendarView: CalendarView
     private val events = mutableMapOf<LocalDate, List<ListItem>>()
     private var eventAdapter = Adapter(this)
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private lateinit var binding: ActivityMainBinding
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        //binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
+        val date = requireArguments().getString("date")
+        selectedDate = LocalDate.parse(date)
+        binding =ActivityMainBinding.bind(view)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         //adds a event to the first day
-        events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
+        //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
         recycler_view.adapter = eventAdapter
-        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.layoutManager = LinearLayoutManager(requireContext())
 
 
 
-        calendarView = findViewById<CalendarView>(R.id.exSevenCalendar)
-        addFab = findViewById<FloatingActionButton>(R.id.fab)
-        audioFab = findViewById<FloatingActionButton>(R.id.audio)
-        textFab= findViewById<FloatingActionButton>(R.id.text)
-        mediaFab= findViewById<FloatingActionButton>(R.id.media)
-        videoFab= findViewById<FloatingActionButton>(R.id.video)
+        calendarView = binding.exSevenCalendar
+        addFab = binding.fab
+        audioFab = binding.audio
+        textFab= binding.text
+        mediaFab= binding.media
+        videoFab= binding.video
 
         audioFab.visibility = View.GONE
         mediaFab.visibility = View.GONE
@@ -97,7 +108,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
 
 
             }
-            Toast.makeText(this@MainActivity, "Fab is clicked", Toast.LENGTH_SHORT).show()
         }
         textFab.setOnClickListener {
             //TODO: create text editor activity to edit text
@@ -126,8 +136,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
             //this will create either a audio or video data entry depending on what the user selects
 
             try {
-                if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this@MainActivity,
+                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(requireActivity(),
                         arrayOf<String>(
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -161,8 +171,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
             //this will create either a audio or video data entry depending on what the user selects
 
             try {
-                if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this@MainActivity,
+                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(requireActivity(),
                         arrayOf<String>(
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -192,7 +202,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
 
         //this is for the calendar day UI size
         val dm = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(dm)
+        val wm = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.defaultDisplay.getMetrics(dm)
         var dayWidth : Int
         var dayHeight: Int
         if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
@@ -225,7 +236,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
             init {
                 view.setOnClickListener {
                     updateAdapterForDate(day.date)
-                    Toast.makeText(this@MainActivity, day.date.toString(), Toast.LENGTH_SHORT).show()
                     val firstDay = calendarView.findFirstVisibleDay()
                     val lastDay = calendarView.findLastVisibleDay()
                     if (firstDay == day) {
@@ -274,10 +284,11 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
                 container.bind(day)
             }
         }
-        val currentMonth = YearMonth.now()
-        val lastMonth = currentMonth.plusMonths(3)
+        val currentMonth = YearMonth.from(selectedDate)
+        val lastMonth = currentMonth.plusMonths(0)
         //val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek.rand
         calendarView.setup(currentMonth, lastMonth, DayOfWeek.values().random())
+        calendarView.scrollToDate(selectedDate)
         //calendarView.scrollToDate(LocalDate.now())
     }
     private fun updateAdapterForDate(date: LocalDate) {
@@ -296,7 +307,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
 
 
     }
-    override fun onItemClick(data : ListItem) {
+    override fun onItemDelete(data : ListItem) {
         //TODO: determine what the item data is based on the ListItemType then create a dialgoue to view it, or delete it
         // possibly add edit for text but idk
         //Toast.makeText(this@MainActivity, data.getListItemType().toString(), Toast.LENGTH_SHORT).show()
@@ -349,6 +360,10 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
 
     }
 
+
+    override fun onItemEdit(data: ListItem) {
+        TODO("Not yet implemented")
+    }
 
 
 }

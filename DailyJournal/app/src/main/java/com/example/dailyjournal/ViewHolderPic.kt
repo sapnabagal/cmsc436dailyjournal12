@@ -4,6 +4,7 @@ import android.media.Image
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import com.chauthai.swipereveallayout.SwipeRevealLayout
 
 class ViewHolderPic(itemView: View) : ViewHolder(itemView) {
 
@@ -14,6 +15,13 @@ class ViewHolderPic(itemView: View) : ViewHolder(itemView) {
     override fun bindType(item: ListItem) {
         var userImage = item as PicType
         image.setImageURI(userImage.image)
+    }
+
+    override fun getDelete(): View {
+        return itemView.findViewById(R.id.Delete)
+    }
+    override fun getSwipeLayout(): SwipeRevealLayout {
+        return (itemView.findViewById<SwipeRevealLayout>(R.id.swipe_layout))
     }
 
 }

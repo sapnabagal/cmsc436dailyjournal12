@@ -1,32 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    android:background="?android:attr/selectableItemBackground"
-    >
+<com.chauthai.swipereveallayout.SwipeRevealLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:id="@+id/swipe_layout"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+app:dragEdge="right"
+app:mode="same_level">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
-        android:contentDescription="test image 1"
-        android:padding="8dp"
-        android:scaleType="fitXY" />
-
-    <RelativeLayout
+<RelativeLayout
+    android:id="@+id/buttons"
+    android:layout_width="wrap_content"
+    android:layout_height="70dp"
+    android:background="@android:color/holo_blue_light">
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/image" >
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="70dp"
+            android:id="@+id/Edit"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:gravity="center"
+            android:background="@android:color/holo_orange_dark"
+            android:src="@drawable/edit"
+            />
+        <ImageView
+            android:id="@+id/Delete"
+            android:src="@drawable/delete"
+            android:layout_width="70dp"
+            android:scaleType="center"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="@android:color/holo_red_dark"
+            android:textColor="@android:color/white"
+            />
 
-        <TextView
-            android:id="@+id/image_caption"
-            android:layout_width="237dp"
-            android:layout_height="67dp"
-            android:text="This is a image"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    </RelativeLayout>
-
+    </LinearLayout>
 </RelativeLayout>
+
+<RelativeLayout
+    android:id="@+id/front"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="101dp"
+            android:layout_height="match_parent"
+            android:contentDescription="test image 1"
+            android:padding="8dp"
+            android:scaleType="fitXY" />
+
+    <TextView
+        android:id="@+id/image_caption"
+        android:layout_width="237dp"
+        android:layout_height="67dp"
+        android:text="This is a image"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+</RelativeLayout>
+</com.chauthai.swipereveallayout.SwipeRevealLayout>

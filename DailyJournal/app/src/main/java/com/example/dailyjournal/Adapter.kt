@@ -5,9 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.add_image.view.*
+import com.chauthai.swipereveallayout.ViewBinderHelper
+import com.chauthai.swipereveallayout.SwipeRevealLayout
 
 class Adapter(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<ViewHolder>() {
     val dataList= mutableListOf<ListItem>()
+    val binderHelper : ViewBinderHelper = ViewBinderHelper()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -43,10 +46,17 @@ class Adapter(private val itemClickListener: OnItemClickListener) : RecyclerView
         val currentItem = dataList[position]
         //holder.imageView.setImageResource(currentItem.imageResource)
         //holder.textView.text = currentItem.text1
+        binderHelper.bind(holder.getSwipeLayout(), currentItem.hashCode().toString())
         holder.bindType(currentItem)
-        holder.itemView.setOnClickListener{
-            itemClickListener.onItemClick(currentItem)
+        holder.getDelete().setOnClickListener{
+            itemClickListener.onItemDelete(currentItem)
         }
+        holder.edit.setOnClickListener{
+            itemClickListener.onItemEdit(currentItem)
+        }
+        //holder.itemView.setOnClickListener{
+        //    itemClickListener.onItemClick(currentItem)
+        //}
     }
 
 

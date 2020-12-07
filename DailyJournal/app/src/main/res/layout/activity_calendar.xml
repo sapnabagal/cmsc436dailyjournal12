@@ -1,19 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:tools="http://schemas.android.com/tools"
 
-    <CalendarView
-        android:id="@+id/calendarView2"
-        android:layout_width="398dp"
-        android:layout_height="393dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.461"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.281" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:id="@+id/list_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        >
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/exTwoAppBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+
+            <include
+                android:id="@+id/legendLayout"
+                layout="@layout/calendar_day_legend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <com.kizitonwose.calendarview.CalendarView
+            android:id="@+id/overviewCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cv_dayViewResource="@layout/calendar_day_2"
+            app:cv_monthHeaderResource="@layout/calendar_month_header_2"
+            app:cv_orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/exTwoAppBarLayout" />
+    </LinearLayout>
+    </FrameLayout>
+</layout>
+

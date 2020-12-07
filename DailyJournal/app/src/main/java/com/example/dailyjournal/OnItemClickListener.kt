@@ -1,5 +1,6 @@
 package com.example.dailyjournal
 
 interface OnItemClickListener {
-    fun onItemClick(data : ListItem)
+    fun onItemDelete(data : ListItem)
+    fun onItemEdit(data : ListItem)
 }
