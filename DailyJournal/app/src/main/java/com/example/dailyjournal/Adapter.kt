@@ -27,7 +27,7 @@ class Adapter(private val itemClickListener: OnItemClickListener) : RecyclerView
             }
             ListItem.TYPE_VIDEO->{
                 val itemView = LayoutInflater.from(parent.context).inflate(R.layout.add_video, parent, false)
-                return ViewHolderPic(itemView)
+                return ViewHolderVideo(itemView)
 
             }
             else -> {

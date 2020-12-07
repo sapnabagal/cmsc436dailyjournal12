@@ -64,9 +64,8 @@ app:mode="same_level">
 
     <TextView
         android:id="@+id/image_caption"
-        android:layout_width="237dp"
+        android:layout_width="137dp"
         android:layout_height="67dp"
-        android:text="This is a image"
         android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 </RelativeLayout>
