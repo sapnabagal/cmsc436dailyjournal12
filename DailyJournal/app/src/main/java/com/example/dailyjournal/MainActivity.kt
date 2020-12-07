@@ -18,12 +18,9 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-<<<<<<< HEAD
 import android.view.ViewGroup
 import android.view.WindowManager
-=======
 import android.widget.EditText
->>>>>>> da622d6d35daa71739b5865d3b7715ab4407aeb9
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -53,12 +50,12 @@ import java.util.*
 
 
 class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
-    public lateinit var addFab: FloatingActionButton
-    public lateinit var audioFab: FloatingActionButton
-    public lateinit var mediaFab: FloatingActionButton
-    public lateinit var videoFab: FloatingActionButton
-    public lateinit var textFab: FloatingActionButton
-    public var allFabsVisible: Boolean = false
+    lateinit var addFab: FloatingActionButton
+    lateinit var audioFab: FloatingActionButton
+    lateinit var mediaFab: FloatingActionButton
+    lateinit var videoFab: FloatingActionButton
+    lateinit var textFab: FloatingActionButton
+    var allFabsVisible: Boolean = false
 
     private lateinit var selectedDate : LocalDate
     private var imageUri: Uri? = null
@@ -69,31 +66,22 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
     private val dayFormatter = DateTimeFormatter.ofPattern("EEE")
     private val monthFormatter = DateTimeFormatter.ofPattern("MMM")
 
-
-
-
-        private lateinit var calendarView: CalendarView
+    private lateinit var calendarView: CalendarView
     private val events = mutableMapOf<LocalDate, List<ListItem>>()
     private var eventAdapter = Adapter(this)
-<<<<<<< HEAD
     private lateinit var binding: ActivityMainBinding
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
         val date = requireArguments().getString("date")
         selectedDate = LocalDate.parse(date)
         binding =ActivityMainBinding.bind(view)
-=======
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onCreate(savedInstanceState: Bundle?) {
->>>>>>> da622d6d35daa71739b5865d3b7715ab4407aeb9
+
         super.onCreate(savedInstanceState)
         //adds a event to the first day
         //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(requireContext())
-
-
-<<<<<<< HEAD
 
         calendarView = binding.exSevenCalendar
         addFab = binding.fab
@@ -101,14 +89,6 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         textFab= binding.text
         mediaFab= binding.media
         videoFab= binding.video
-=======
-        calendarView = findViewById<CalendarView>(R.id.exSevenCalendar)
-        addFab = findViewById<FloatingActionButton>(R.id.fab)
-        audioFab = findViewById<FloatingActionButton>(R.id.audio)
-        textFab= findViewById<FloatingActionButton>(R.id.text)
-        mediaFab= findViewById<FloatingActionButton>(R.id.media)
-        videoFab= findViewById<FloatingActionButton>(R.id.video)
->>>>>>> da622d6d35daa71739b5865d3b7715ab4407aeb9
 
         audioFab.visibility = View.GONE
         mediaFab.visibility = View.GONE
@@ -135,8 +115,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             //TODO: create text editor activity to edit text
             var newText : String = "";
             try{
-                var textEditText = EditText(this);
-                val dialog: android.app.AlertDialog? = android.app.AlertDialog.Builder(this)
+                var textEditText = EditText(activity);
+                val dialog: android.app.AlertDialog? = android.app.AlertDialog.Builder(activity)
                         .setTitle("Add a new text entry")
                         .setMessage("What did you do today?")
                         .setView(textEditText)
