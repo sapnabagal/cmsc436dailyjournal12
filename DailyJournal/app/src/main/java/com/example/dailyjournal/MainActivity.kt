@@ -76,19 +76,12 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         val date = requireArguments().getString("date")
         selectedDate = LocalDate.parse(date)
         binding =ActivityMainBinding.bind(view)
-<<<<<<< HEAD
-=======
-
->>>>>>> 9a73d3fb6b3536f2a4c6427349df2a0bf07a5b09
         super.onCreate(savedInstanceState)
         //adds a event to the first day
         //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(requireContext())
-<<<<<<< HEAD
-=======
 
->>>>>>> 9a73d3fb6b3536f2a4c6427349df2a0bf07a5b09
         calendarView = binding.exSevenCalendar
         addFab = binding.fab
         audioFab = binding.audio
@@ -121,13 +114,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             //TODO: create text editor activity to edit text
             var newText : String = "";
             try{
-<<<<<<< HEAD
-                var textEditText = EditText(requireContext());
-                val dialog: android.app.AlertDialog? = android.app.AlertDialog.Builder(requireContext())
-=======
                 var textEditText = EditText(activity);
                 val dialog: android.app.AlertDialog? = android.app.AlertDialog.Builder(activity)
->>>>>>> 9a73d3fb6b3536f2a4c6427349df2a0bf07a5b09
                         .setTitle("Add a new text entry")
                         .setMessage("What did you do today?")
                         .setView(textEditText)
