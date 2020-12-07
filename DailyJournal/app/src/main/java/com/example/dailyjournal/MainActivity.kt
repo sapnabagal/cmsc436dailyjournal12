@@ -1,8 +1,10 @@
 package com.example.dailyjournal
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -15,8 +17,10 @@ import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
@@ -49,6 +53,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
     private var selectedDate = LocalDate.now()
     private var imageUri: Uri? = null
     private var imgPath: String = ""
+    private lateinit var placeIntent : Intent
 
     private val dateFormatter = DateTimeFormatter.ofPattern("dd")
     private val dayFormatter = DateTimeFormatter.ofPattern("EEE")
@@ -60,6 +65,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         private lateinit var calendarView: CalendarView
     private val events = mutableMapOf<LocalDate, List<ListItem>>()
     private var eventAdapter = Adapter(this)
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -67,7 +73,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(this)
-
 
 
         calendarView = findViewById<CalendarView>(R.id.exSevenCalendar)
@@ -101,8 +106,30 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         }
         textFab.setOnClickListener {
             //TODO: create text editor activity to edit text
-            events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("This is Text", selectedDate))
-            updateAdapterForDate(selectedDate)
+            var newText : String = "";
+            try{
+                var textEditText = EditText(this);
+                val dialog: android.app.AlertDialog? = android.app.AlertDialog.Builder(this)
+                        .setTitle("Add a new text entry")
+                        .setMessage("What did you do today?")
+                        .setView(textEditText)
+                        .setPositiveButton("Add") { dialog, which ->
+                            val text: String = textEditText.text.toString()
+                            newText = text;
+                            events[selectedDate] = events[selectedDate].orEmpty().plus(TextType(text, selectedDate))
+                            updateAdapterForDate(selectedDate)
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                dialog!!.show()
+            }
+            catch(e: Exception){
+                e.printStackTrace();
+            }
+
+            //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("test text", selectedDate))
+            //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType(newText, selectedDate))
+            //updateAdapterForDate(selectedDate)
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
@@ -112,6 +139,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         }
         audioFab.setOnClickListener {
             //TODO: open activity to record audio
+
             events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(selectedDate))
             updateAdapterForDate(selectedDate)
             audioFab.hide()
@@ -346,6 +374,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener{
         val PICK_IMAGE_ROM_GALLERY = 2
         val PICK_VIDEO_FROM_GALLERY = 3
         val RES_IMAGE = 100
+        var INTENT_DATA = "course.labs.locationlab.placerecord.IntentData"
 
     }
 
