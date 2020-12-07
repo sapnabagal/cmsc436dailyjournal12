@@ -49,6 +49,7 @@ app:mode="same_level">
     android:background="?android:attr/selectableItemBackground">
 
     <LinearLayout
+        android:id="@+id/front"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="horizontal">

@@ -54,6 +54,12 @@ class Adapter(private val itemClickListener: OnItemClickListener) : RecyclerView
         holder.edit.setOnClickListener{
             itemClickListener.onItemEdit(currentItem)
         }
+        holder.click.setOnClickListener{
+            if(holder.getSwipeLayout().isClosed){
+                itemClickListener.onItemClick(currentItem)
+
+            }
+        }
         //holder.itemView.setOnClickListener{
         //    itemClickListener.onItemClick(currentItem)
         //}

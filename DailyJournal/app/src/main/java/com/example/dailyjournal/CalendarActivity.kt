@@ -2,6 +2,7 @@ package com.example.dailyjournal
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,7 @@ import java.time.YearMonth
 class CalendarActivity : AppCompatActivity(){
 
     private lateinit var binding: ActivityCalendarBinding
-    private var selectedDate = LocalDate.now()
+    private var selectedDate : LocalDate? = null
     private val today = LocalDate.now()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +78,7 @@ class CalendarActivity : AppCompatActivity(){
                 textView.text = day.date.dayOfMonth.toString()
 
                 if (day.owner == DayOwner.THIS_MONTH) {
-                    //textView.makeVisible()
+                    textView.alpha = 1f
                     when (day.date) {
                         selectedDate -> {
                             textView.setTextColor(Color.parseColor("#FFFFFF"))
@@ -94,7 +95,7 @@ class CalendarActivity : AppCompatActivity(){
 
                     }
                 } else {
-                    textView.isVisible = false
+                    textView.alpha = 0f
                 }
             }
         }
