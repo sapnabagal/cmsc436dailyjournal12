@@ -423,10 +423,6 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
     }
 
 
-    override fun onItemEdit(data: ListItem) {
-        //TODO make a activity to edit the data
-        Toast.makeText(activity,"EDITING",Toast.LENGTH_SHORT).show();
-    }
 
     override fun onItemClick(data: ListItem) {
         //TODO make a activity to preview the data
