@@ -46,15 +46,18 @@ app:mode="same_level">
     <VideoView
         android:id="@+id/video"
         android:layout_width="150dp"
-        android:layout_height="100dp" />
+        android:layout_height="150dp" />
 
 
     <TextView
         android:id="@+id/video_caption"
         android:layout_width="237dp"
         android:layout_height="67dp"
-        android:text="This is a video"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:text="Click here to view full video"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textColor="@android:color/black"/>
     </LinearLayout>
 </RelativeLayout>
 </com.chauthai.swipereveallayout.SwipeRevealLayout>

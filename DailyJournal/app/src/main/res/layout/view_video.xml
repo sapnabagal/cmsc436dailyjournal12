@@ -7,8 +7,8 @@
 
     <VideoView
         android:id="@+id/video_large"
-        android:layout_width="410dp"
-        android:layout_height="256dp"
+        android:layout_width="324dp"
+        android:layout_height="378dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:padding="8dp"

@@ -46,8 +46,8 @@ app:mode="same_level">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="101dp"
-            android:layout_height="match_parent"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:contentDescription="test image 1"
             android:padding="8dp"
             android:scaleType="fitXY" />
@@ -56,7 +56,12 @@ app:mode="same_level">
         android:id="@+id/image_caption"
         android:layout_width="137dp"
         android:layout_height="67dp"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:text="Click here to view full photo"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textColor="@android:color/black"/>
+
     </LinearLayout>
 </RelativeLayout>
 </com.chauthai.swipereveallayout.SwipeRevealLayout>
