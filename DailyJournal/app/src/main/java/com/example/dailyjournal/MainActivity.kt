@@ -480,7 +480,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
 
     override fun onItemClick(data: ListItem) {
         //TODO make a activity to preview the data
-        Toast.makeText(activity,"PREVIEW",Toast.LENGTH_SHORT).show();
+
         if (data.getListItemType()==4){
             var image = data as PicType
 
