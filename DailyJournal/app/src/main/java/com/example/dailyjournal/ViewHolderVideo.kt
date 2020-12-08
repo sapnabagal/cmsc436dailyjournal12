@@ -15,6 +15,7 @@ class ViewHolderVideo(itemView: View) : ViewHolder(itemView) {
     override fun bindType(item: ListItem) {
         var userVideo = item as VidType
         video.setVideoURI(userVideo.video)
+        video.seekTo(1);
     }
 
     override fun getDelete(): View {

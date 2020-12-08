@@ -4,21 +4,21 @@ import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 
-class AudioType(audioFile: File, date: LocalDate, time: LocalTime): ListItem{
+class AudioType(filename: String, date: LocalDate, time: LocalTime): ListItem{
 
     private var id: Int = 0
-    var audio: File = audioFile
-    var dateData = date
+    var audioFile: String = filename
+    var dateData: LocalDate = date
     var timeData: LocalTime = time
 
     override fun getId(): Int = id
     override fun setId(id: Int) { this.id = id }
 
-    override fun getListItemType(): Int = ListItem.TYPE_VIDEO
+    override fun getListItemType(): Int = ListItem.TYPE_AUDIO
 
     override fun getDate(): LocalDate = dateData
 
     override fun getTime(): LocalTime = timeData
 
-    constructor(id: Int, audioFile: File, date: LocalDate, time: LocalTime) : this(audioFile, date, time) { this.id = id }
+    constructor(id: Int, filename: String, date: LocalDate, time: LocalTime) : this(filename, date, time) { this.id = id }
 }

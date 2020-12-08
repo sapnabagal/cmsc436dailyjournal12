@@ -35,7 +35,7 @@ object Converters {
 
     fun listItemToDataItem(it: ListItem): DataItem {
         return when (it.getListItemType()) {
-            ListItem.TYPE_AUDIO -> DataItem(it.getId(), it.getListItemType(), it.getDate(), it.getTime(), (it as AudioType).audio.toString())
+            ListItem.TYPE_AUDIO -> DataItem(it.getId(), it.getListItemType(), it.getDate(), it.getTime(), (it as AudioType).audioFile)
             ListItem.TYPE_VIDEO -> DataItem(it.getId(), it.getListItemType(), it.getDate(), it.getTime(), (it as VidType).video.toString())
             ListItem.TYPE_TEXT -> DataItem(it.getId(), it.getListItemType(), it.getDate(), it.getTime(), (it as TextType).inputText)
             ListItem.TYPE_PIC -> DataItem(it.getId(), it.getListItemType(), it.getDate(), it.getTime(), (it as PicType).image.toString())
@@ -45,7 +45,7 @@ object Converters {
 
     fun dataItemToListItem(it: DataItem): ListItem {
         return when (it.type) {
-            ListItem.TYPE_AUDIO -> AudioType(it.uid, File(it.textOrUri), it.date, it.time)
+            ListItem.TYPE_AUDIO -> AudioType(it.uid, it.textOrUri, it.date, it.time)
             ListItem.TYPE_VIDEO -> VidType(it.uid, Uri.parse(it.textOrUri), it.date, it.time)
             ListItem.TYPE_TEXT -> TextType(it.uid, it.textOrUri, it.date, it.time)
             ListItem.TYPE_PIC -> PicType(it.uid, Uri.parse(it.textOrUri), it.date, it.time)

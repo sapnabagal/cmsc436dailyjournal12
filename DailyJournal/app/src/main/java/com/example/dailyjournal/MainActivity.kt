@@ -1,37 +1,28 @@
 package com.example.dailyjournal
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.os.Parcelable
-import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.*
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dailyjournal.databinding.ActivityCalendarBinding
+import com.example.dailyjournal.database.AppDatabase
+import com.example.dailyjournal.database.DataItemDao
 import com.example.dailyjournal.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kizitonwose.calendarview.CalendarView
@@ -40,13 +31,14 @@ import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.Size
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
+import java.io.IOException
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-import java.time.temporal.WeekFields
-import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
@@ -71,7 +63,14 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
     private var eventAdapter = Adapter(this)
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var mPlayer: MediaPlayer
+
+    private lateinit var dataItemDao: DataItemDao
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val appDatabase = AppDatabase.getInstance(requireActivity().applicationContext)
+        dataItemDao = appDatabase.dataItemDao()
+
         //binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
         val date = requireArguments().getString("date")
         selectedDate = LocalDate.parse(date)
@@ -79,6 +78,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         super.onCreate(savedInstanceState)
         //adds a event to the first day
         //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
+        var mDividerItemDecoration = DividerItemDecoration(recycler_view.context, DividerItemDecoration.VERTICAL)
+        recycler_view.addItemDecoration(mDividerItemDecoration)
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(requireContext())
 
@@ -122,7 +123,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                         .setPositiveButton("Add") { dialog, which ->
                             val text: String = textEditText.text.toString()
                             newText = text;
-                            events[selectedDate] = events[selectedDate].orEmpty().plus(TextType(text, selectedDate))
+                            //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType(text, selectedDate, LocalTime.now()))
+                            dataItemDao.insertAll(TextType(text, selectedDate, LocalTime.now()))
                             updateAdapterForDate(selectedDate)
                         }
                         .setNegativeButton("Cancel", null)
@@ -146,8 +148,31 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         audioFab.setOnClickListener {
             //TODO: open activity to record audio
 
-            events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(selectedDate))
-            updateAdapterForDate(selectedDate)
+            try {
+                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                            arrayOf<String>(
+                                    Manifest.permission.RECORD_AUDIO,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ),
+                            RECORD_AUDIO
+                    )
+                } else {
+
+                    var intent = Intent(activity, AudioActivity::class.java);
+                    Log.i(TAG, "starting audio activity")
+                    startActivityForResult(intent, RECORD_AUDIO)
+
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            //events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(Uri.EMPTY, "test audio string", selectedDate))
+            //updateAdapterForDate(selectedDate)
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
@@ -293,7 +318,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                     dayText.text = dayFormatter.format(day.date)
                     monthText.text = monthFormatter.format(day.date)
 
-                    dateText.setTextColor(view.context.getColor(if (day.date == selectedDate) R.color.pink else R.color.black))
+                    dateText.setTextColor(view.context.getColor(if (day.date == selectedDate) R.color.pink else R.color.white))
                     selectView.isVisible = day.date == selectedDate
 
                 }
@@ -319,14 +344,16 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         //this function is used to clear the recycler view when a new date is selected then add the events from that day
         eventAdapter.apply {
             dataList.clear()
-            dataList.addAll(this@MainActivity.events[date].orEmpty())
+            //dataList.addAll(this@MainActivity.events[date].orEmpty())
+            dataList.addAll(dataItemDao.loadAllByDateListItem(date))
             notifyDataSetChanged()
         }
     }
 
     private fun deleteEvent(data :  ListItem){
         val date = data.getDate()
-        events[date] = events[date].orEmpty().minus(data)
+        //events[date] = events[date].orEmpty().minus(data)
+        dataItemDao.delete(data)
         updateAdapterForDate(date)
 
 
@@ -355,7 +382,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                         return;
                     }
                     var imageData : Uri = data.data!!;
-                    events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData, selectedDate))
+                    //events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData, selectedDate, LocalTime.now()))
+                    dataItemDao.insertAll(PicType(imageData, selectedDate, LocalTime.now()))
                     updateAdapterForDate(selectedDate)
                 }
             }
@@ -368,9 +396,31 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                         return;
                     }
                     var videoData : Uri = data.data!!;
-                    events[selectedDate] = events[selectedDate].orEmpty().plus(VidType(videoData, selectedDate))
+                    //events[selectedDate] = events[selectedDate].orEmpty().plus(VidType(videoData, selectedDate, LocalTime.now()))
+                    dataItemDao.insertAll(VidType(videoData, selectedDate, LocalTime.now()))
                     updateAdapterForDate(selectedDate)
                 }
+            }
+            RECORD_AUDIO->{
+                if(resultCode== Activity.RESULT_OK){
+                    Log.i(TAG, "audio result OK")
+                    if(data == null){
+                        Log.i(TAG, "data returned is null")
+                        //events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType("test audio string", selectedDate, LocalTime.now()))
+                        updateAdapterForDate(selectedDate)
+                        return;
+                    }
+                    var audioData : Uri = data.data!!;
+                    var filename : String? = data.getStringExtra("AUDIO_FILENAME")
+
+                    //events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(filename!!, selectedDate, LocalTime.now()))
+                    dataItemDao.insertAll(AudioType(filename!!, selectedDate, LocalTime.now()))
+
+                    updateAdapterForDate(selectedDate)
+                }
+
+
+
             }
         }
     }
@@ -382,6 +432,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         val PICK_VIDEO_FROM_GALLERY = 3
         val RES_IMAGE = 100
         var INTENT_DATA = "course.labs.locationlab.placerecord.IntentData"
+        var RECORD_AUDIO = 4;
 
     }
 
@@ -394,7 +445,118 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
     override fun onItemClick(data: ListItem) {
         //TODO make a activity to preview the data
         Toast.makeText(activity,"PREVIEW",Toast.LENGTH_SHORT).show();
+        if (data.getListItemType()==4){
+            var image = data as PicType
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_image, null)
+            val imageView = view.findViewById<ImageView>(R.id.image_large)
+            imageView.setImageURI(image.image)
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> }
+
+            alertadd.show()
+        }
+        else if (data.getListItemType()==2){
+            var vid = data as VidType
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_video, null)
+            val vidView = view.findViewById<VideoView>(R.id.video_large)
+            vidView.setVideoURI(vid.video)
+            vidView.start()
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> vidView.stopPlayback()}
+
+            alertadd.show()
+        }
+        else if (data.getListItemType()==3){
+            var text = data as TextType
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_text, null)
+            val textView = view.findViewById<TextView>(R.id.text_large)
+            textView.text = text.inputText
+
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> }
+
+            alertadd.show()
+        }
+        else if(data.getListItemType()==1){
+            var audio = data as AudioType
+            var fileName = data.audioFile
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_audio, null)
+            val seekBar = view.findViewById<SeekBar>(R.id.seekBar)
+            var imgViewPlay = view.findViewById<ImageView>(R.id.imgViewPlay)
+            var lastProgress = 0;
+            var isPlaying = false;
+
+            imgViewPlay.setOnClickListener { v ->
+
+                mPlayer = MediaPlayer()
+                var mExecutor = Executors.newSingleThreadScheduledExecutor()
+
+                var mSeekbarProgressUpdateTask = Runnable {
+                    if (mPlayer != null
+                            && mPlayer.isPlaying) {
+                        val currentPosition: Int = mPlayer.currentPosition
+                        seekBar.progress = currentPosition
+                    }
+                }
+
+
+                try {
+                    mPlayer!!.setDataSource(fileName)
+                    mPlayer!!.prepare()
+                    mPlayer!!.start()
+                } catch (e: IOException) {
+                    Log.e("LOG_TAG", "prepare() failed")
+                }
+
+                //making the imageView pause button
+
+                imgViewPlay.setImageResource(R.drawable.ic_pause_circle)
+
+                seekBar.progress = lastProgress
+                mPlayer!!.seekTo(lastProgress)
+                seekBar.max = mPlayer!!.duration
+                mExecutor.scheduleAtFixedRate(mSeekbarProgressUpdateTask, 0, 100, TimeUnit.MILLISECONDS)
+
+                mPlayer!!.setOnCompletionListener(MediaPlayer.OnCompletionListener {
+                    imgViewPlay.setImageResource(R.drawable.ic_play_circle)
+                    mPlayer!!.seekTo(0)
+                })
+
+                seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                        if (mPlayer != null && fromUser) {
+                            mPlayer!!.seekTo(progress)
+                            lastProgress = progress
+                        }
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {}
+                })
+            }
+
+
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> }
+
+            alertadd.show()
+
+        }
     }
+
 
 
 }
