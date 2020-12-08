@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.TextView
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 
+/* Specific ViewHolder for Audio type in recyclerView. */
 class ViewHolderAudio(itemView: View) : ViewHolder(itemView) {
 
 

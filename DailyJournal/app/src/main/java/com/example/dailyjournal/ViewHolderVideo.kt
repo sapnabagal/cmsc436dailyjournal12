@@ -6,6 +6,8 @@ import android.widget.TextView
 import android.widget.VideoView
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 
+/* Specific ViewHolder for Video type in recyclerView. */
+
 class ViewHolderVideo(itemView: View) : ViewHolder(itemView) {
 
     lateinit var video: VideoView

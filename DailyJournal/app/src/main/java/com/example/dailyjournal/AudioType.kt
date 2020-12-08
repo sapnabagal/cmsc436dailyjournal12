@@ -4,6 +4,9 @@ import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 
+/* Class to represent Audio ListItem type.
+  Contains local timestamp of creation, date attached to, and filename of where mp3 is stored */
+
 class AudioType(filename: String, date: LocalDate, time: LocalTime): ListItem{
 
     private var id: Int = 0

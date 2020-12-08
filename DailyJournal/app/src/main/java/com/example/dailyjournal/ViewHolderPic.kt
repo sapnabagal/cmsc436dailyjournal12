@@ -6,6 +6,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 
+/* Specific ViewHolder for Image type in recyclerView. */
+
 class ViewHolderPic(itemView: View) : ViewHolder(itemView) {
 
     lateinit var image: ImageView

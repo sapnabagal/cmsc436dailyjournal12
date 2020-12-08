@@ -111,6 +111,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
 
             }
         }
+
+        /* Opens an AlertDialog to allow user to enter a text entry into the journal */
         textFab.setOnClickListener {
             //TODO: create text editor activity to edit text
             var newText : String = "";
@@ -145,6 +147,9 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             allFabsVisible = false
 
         }
+
+        /* Starts the AudioActivity upon permission granted for recording audio, reading/writing to external storage.
+        * Audio Activity is responsible for recording the voice memo, will be played in on item click back in MainActivity. */
         audioFab.setOnClickListener {
             //TODO: open activity to record audio
 
@@ -180,9 +185,10 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             allFabsVisible = false
 
         }
+
+        /* Starts the select from gallery intent to allow user to select only an image type to add as an entry.
+        * Saves result as a Uri object which is part of the result intent. */
         mediaFab.setOnClickListener{
-            //TODO: open activity to upload photo
-            //this will create either a audio or video data entry depending on what the user selects
 
             try {
                 if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
@@ -205,7 +211,6 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                 e.printStackTrace()
             }
 
-            //events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(R.drawable.media))
             updateAdapterForDate(selectedDate)
             audioFab.hide()
             mediaFab.hide()
@@ -214,6 +219,9 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             allFabsVisible = false
         }
 
+
+        /* Starts the gallery choose activity for user to select a video file.
+         * Saves the Uri as part of the intent result to display later  */
 
         videoFab.setOnClickListener{
             //TODO: open activity to upload video
@@ -340,8 +348,10 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         calendarView.scrollToDate(selectedDate)
         //calendarView.scrollToDate(LocalDate.now())
     }
+
+    /* this function is used to clear the recycler view when a new date is selected then add the events from that day */
     private fun updateAdapterForDate(date: LocalDate) {
-        //this function is used to clear the recycler view when a new date is selected then add the events from that day
+
         eventAdapter.apply {
             dataList.clear()
             //dataList.addAll(this@MainActivity.events[date].orEmpty())
@@ -349,6 +359,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             notifyDataSetChanged()
         }
     }
+
+    /* Deletes entry from database */
 
     private fun deleteEvent(data :  ListItem){
         val date = data.getDate()
@@ -359,21 +371,27 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
 
     }
     override fun onItemDelete(data : ListItem) {
-        //TODO: determine what the item data is based on the ListItemType then create a dialgoue to view it, or delete it
-        // possibly add edit for text but idk
-        //Toast.makeText(this@MainActivity, data.getListItemType().toString(), Toast.LENGTH_SHORT).show()
-        //if(data.getListItemType() == ListItem.TYPE_TEXT){
-        //    (data as TextType).inputText = Calendar.getInstance().time.toString()
-        //    eventAdapter.notifyDataSetChanged()
-        //}
+        //removes the selected list item data from recyclerview and database.
+
         deleteEvent(data)
 
     }
 
+    /* Responding to each of the result codes from respective activities launched.
+    *
+    * PICK_IMAGE_FROM_GALLERY -- retrieves imageUri data from select from gallery activity launched
+    * PICK_VIDEO_FROM_GALLERY -- retrieves videoUri data from select from gallery activity launched
+    * RECORD_AUDIO -- retrieves filename data from recorded audio and stores audio in Intent extra
+    *
+    * */
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.i(TAG, "in onActivity Result $resultCode")
+
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
+
+            /* Select Image from Gallery result code */
             PICK_IMAGE_ROM_GALLERY -> {
                 if (resultCode == Activity.RESULT_OK) {
                     Log.i(TAG, "image result OK")
@@ -381,8 +399,10 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                         Log.i(TAG, "data returned is null")
                         return;
                     }
+                    /* Retrieving image Uri */
                     var imageData : Uri = data.data!!;
-                    //events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData, selectedDate, LocalTime.now()))
+
+                    /* Inserting into the database as a PicType ListItem with local timestamp */
                     dataItemDao.insertAll(PicType(imageData, selectedDate, LocalTime.now()))
                     updateAdapterForDate(selectedDate)
                 }
@@ -425,22 +445,19 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         }
     }
 
-    companion object {
-
-        private val TAG = "Get-Image"
-        val PICK_IMAGE_ROM_GALLERY = 2
-        val PICK_VIDEO_FROM_GALLERY = 3
-        val RES_IMAGE = 100
-        var INTENT_DATA = "course.labs.locationlab.placerecord.IntentData"
-        var RECORD_AUDIO = 4;
-
-    }
-
-
     override fun onItemEdit(data: ListItem) {
         //TODO make a activity to edit the data
         Toast.makeText(activity,"EDITING",Toast.LENGTH_SHORT).show();
     }
+
+    /* Opens up a more focused view of each Entry
+    *
+    * Text -- opens AlertDialog with larger text
+    * Image -- opens Full sized image for viewing
+    * Video -- starts playing video on click
+    * Audio -- starts playback of recorded audio in AlertDialog
+    *
+    * */
 
     override fun onItemClick(data: ListItem) {
         //TODO make a activity to preview the data
@@ -498,6 +515,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             var lastProgress = 0;
             var isPlaying = false;
 
+            /* imgView play is the playbutton in the view_audio xml file */
             imgViewPlay.setOnClickListener { v ->
 
                 mPlayer = MediaPlayer()
@@ -548,15 +566,20 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                 })
             }
 
-
             alertadd.setView(view)
             alertadd.setNeutralButton("Close") { dlg, sumthin -> }
 
             alertadd.show()
-
         }
     }
 
+    companion object {
 
+        private val TAG = "Get-Image"
+        val PICK_IMAGE_ROM_GALLERY = 2
+        val PICK_VIDEO_FROM_GALLERY = 3
+        var RECORD_AUDIO = 4;
+
+    }
 
 }

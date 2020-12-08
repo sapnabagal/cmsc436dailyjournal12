@@ -4,6 +4,8 @@ import android.net.Uri
 import java.time.LocalDate
 import java.time.LocalTime
 
+/* Class to represent Image ListItem type.
+  Contains local timestamp of creation, date attached to, and Uri content */
 class PicType(imageUri: Uri, date: LocalDate, time: LocalTime): ListItem {
 
     private var id: Int = 0
