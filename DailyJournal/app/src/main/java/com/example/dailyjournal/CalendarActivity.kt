@@ -20,6 +20,7 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
+import com.kizitonwose.calendarview.utils.yearMonth
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -40,7 +41,12 @@ class CalendarActivity : AppCompatActivity(){
         binding = DataBindingUtil.setContentView(this, R.layout.activity_calendar)
 
 
-        binding.overviewCalendar.setup(YearMonth.now(), YearMonth.now().plusMonths(10),DayOfWeek.values().first())
+        if(dataItemDao.dateMin() != null && dataItemDao.dateMax() != null){
+            binding.overviewCalendar.setup(dataItemDao.dateMin()!!.yearMonth, dataItemDao.dateMax()!!.yearMonth,DayOfWeek.values().first())
+        }else{
+            binding.overviewCalendar.setup(YearMonth.now(), YearMonth.now(),DayOfWeek.values().first())
+
+        }
 
         class DayViewContainer(view: View) : ViewContainer(view) {
             // Will be set when this container is bound. See the dayBinder.
