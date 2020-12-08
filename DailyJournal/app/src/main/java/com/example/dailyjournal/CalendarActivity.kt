@@ -62,7 +62,7 @@ class CalendarActivity : AppCompatActivity(){
                     val info = Bundle()
                     info.putString("date", day.date.toString())
                     fragment.arguments = info
-                    transaction.setCustomAnimations(R.anim.enter, R.anim.exit)
+                    transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out_down)
                     transaction.add(R.id.list_view_container, fragment, fragment.javaClass.simpleName)
                     transaction.addToBackStack(MainActivity.javaClass.simpleName)
                     transaction.commit()
@@ -107,7 +107,7 @@ class CalendarActivity : AppCompatActivity(){
             MonthHeaderFooterBinder<MonthViewContainer> {
             override fun create(view: View) = MonthViewContainer(view)
             override fun bind(container: MonthViewContainer, month: CalendarMonth) {
-                @SuppressLint("SetTextI18n") // Concatenation warning for `setText` call.
+                @SuppressLint("SetTextI18n")
                 container.textView.text = "${month.yearMonth.month.name.toLowerCase().capitalize()} ${month.year}"
             }
         }

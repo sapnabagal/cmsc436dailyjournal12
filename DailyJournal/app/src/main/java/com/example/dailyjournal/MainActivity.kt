@@ -65,7 +65,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         super.onCreate(savedInstanceState)
         //adds a event to the first day
         //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
-        var mDividerItemDecoration = DividerItemDecoration(recycler_view.context, getResources().getConfiguration().orientation)
+        var mDividerItemDecoration = DividerItemDecoration(recycler_view.context, DividerItemDecoration.VERTICAL)
         recycler_view.addItemDecoration(mDividerItemDecoration)
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(requireContext())
@@ -281,7 +281,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                     dayText.text = dayFormatter.format(day.date)
                     monthText.text = monthFormatter.format(day.date)
 
-                    dateText.setTextColor(view.context.getColor(if (day.date == selectedDate) R.color.pink else R.color.black))
+                    dateText.setTextColor(view.context.getColor(if (day.date == selectedDate) R.color.pink else R.color.white))
                     selectView.isVisible = day.date == selectedDate
 
                 }
