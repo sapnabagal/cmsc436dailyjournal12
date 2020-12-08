@@ -592,13 +592,5 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         }
     }
 
-    companion object {
-
-        private val TAG = "Get-Image"
-        val PICK_IMAGE_ROM_GALLERY = 2
-        val PICK_VIDEO_FROM_GALLERY = 3
-        var RECORD_AUDIO = 4;
-
-    }
 
 }
