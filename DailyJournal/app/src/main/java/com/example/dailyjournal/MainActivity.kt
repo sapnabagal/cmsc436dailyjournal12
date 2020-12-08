@@ -21,6 +21,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.dailyjournal.database.AppDatabase
+import com.example.dailyjournal.database.DataItemDao
 import com.example.dailyjournal.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kizitonwose.calendarview.CalendarView
@@ -32,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Executors
@@ -62,7 +65,12 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
 
     private lateinit var mPlayer: MediaPlayer
 
+    private lateinit var dataItemDao: DataItemDao
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val appDatabase = AppDatabase.getInstance(requireActivity().applicationContext)
+        dataItemDao = appDatabase.dataItemDao()
+
         //binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
         val date = requireArguments().getString("date")
         selectedDate = LocalDate.parse(date)
@@ -115,7 +123,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                         .setPositiveButton("Add") { dialog, which ->
                             val text: String = textEditText.text.toString()
                             newText = text;
-                            events[selectedDate] = events[selectedDate].orEmpty().plus(TextType(text, selectedDate))
+                            //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType(text, selectedDate, LocalTime.now()))
+                            dataItemDao.insertAll(TextType(text, selectedDate, LocalTime.now()))
                             updateAdapterForDate(selectedDate)
                         }
                         .setNegativeButton("Cancel", null)
@@ -335,14 +344,16 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         //this function is used to clear the recycler view when a new date is selected then add the events from that day
         eventAdapter.apply {
             dataList.clear()
-            dataList.addAll(this@MainActivity.events[date].orEmpty())
+            //dataList.addAll(this@MainActivity.events[date].orEmpty())
+            dataList.addAll(dataItemDao.loadAllByDateListItem(date))
             notifyDataSetChanged()
         }
     }
 
     private fun deleteEvent(data :  ListItem){
         val date = data.getDate()
-        events[date] = events[date].orEmpty().minus(data)
+        //events[date] = events[date].orEmpty().minus(data)
+        dataItemDao.delete(data)
         updateAdapterForDate(date)
 
 
@@ -371,7 +382,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                         return;
                     }
                     var imageData : Uri = data.data!!;
-                    events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData, selectedDate))
+                    //events[selectedDate] = events[selectedDate].orEmpty().plus(PicType(imageData, selectedDate, LocalTime.now()))
+                    dataItemDao.insertAll(PicType(imageData, selectedDate, LocalTime.now()))
                     updateAdapterForDate(selectedDate)
                 }
             }
@@ -384,7 +396,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                         return;
                     }
                     var videoData : Uri = data.data!!;
-                    events[selectedDate] = events[selectedDate].orEmpty().plus(VidType(videoData, selectedDate))
+                    //events[selectedDate] = events[selectedDate].orEmpty().plus(VidType(videoData, selectedDate, LocalTime.now()))
+                    dataItemDao.insertAll(VidType(videoData, selectedDate, LocalTime.now()))
                     updateAdapterForDate(selectedDate)
                 }
             }
@@ -393,14 +406,15 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                     Log.i(TAG, "audio result OK")
                     if(data == null){
                         Log.i(TAG, "data returned is null")
-                        events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(Uri.EMPTY, "test audio string", selectedDate))
+                        //events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType("test audio string", selectedDate, LocalTime.now()))
                         updateAdapterForDate(selectedDate)
                         return;
                     }
                     var audioData : Uri = data.data!!;
                     var filename : String? = data.getStringExtra("AUDIO_FILENAME")
 
-                    events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(audioData, filename!!, selectedDate))
+                    //events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(filename!!, selectedDate, LocalTime.now()))
+                    dataItemDao.insertAll(AudioType(filename!!, selectedDate, LocalTime.now()))
 
                     updateAdapterForDate(selectedDate)
                 }
