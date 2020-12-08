@@ -30,6 +30,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dailyjournal.databinding.ActivityCalendarBinding
 import com.example.dailyjournal.databinding.ActivityMainBinding
@@ -79,6 +80,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         super.onCreate(savedInstanceState)
         //adds a event to the first day
         //events[selectedDate] = events[selectedDate].orEmpty().plus(TextType("THIS IS A INIT TEST", selectedDate))
+        var mDividerItemDecoration = DividerItemDecoration(recycler_view.context, getResources().getConfiguration().orientation)
+        recycler_view.addItemDecoration(mDividerItemDecoration)
         recycler_view.adapter = eventAdapter
         recycler_view.layoutManager = LinearLayoutManager(requireContext())
 
