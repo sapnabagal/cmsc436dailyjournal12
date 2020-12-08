@@ -85,7 +85,8 @@ class AudioActivity : AppCompatActivity(), View.OnClickListener {
             file.mkdirs()
         }
 
-        fileName = root.absolutePath + "/AndroidCodility/Audios/" + (System.currentTimeMillis().toString() + ".mp3")
+        fileName = root.absolutePath + "/DailyJournal/Audios/" + (System.currentTimeMillis().toString() + ".mp3")
+
         Log.d("filename", fileName!!)
         mRecorder!!.setOutputFile(fileName)
         mRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)

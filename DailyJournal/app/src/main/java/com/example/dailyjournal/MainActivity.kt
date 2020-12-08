@@ -34,6 +34,8 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
@@ -485,6 +487,17 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             imgViewPlay.setOnClickListener { v ->
 
                 mPlayer = MediaPlayer()
+                var mExecutor = Executors.newSingleThreadScheduledExecutor()
+
+                var mSeekbarProgressUpdateTask = Runnable {
+                    if (mPlayer != null
+                            && mPlayer.isPlaying) {
+                        val currentPosition: Int = mPlayer.currentPosition
+                        seekBar.progress = currentPosition
+                    }
+                }
+
+
                 try {
                     mPlayer!!.setDataSource(fileName)
                     mPlayer!!.prepare()
@@ -500,8 +513,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                 seekBar.progress = lastProgress
                 mPlayer!!.seekTo(lastProgress)
                 seekBar.max = mPlayer!!.duration
-                seekBar.progress = mPlayer!!.currentPosition
-                lastProgress = mPlayer!!.currentPosition
+                mExecutor.scheduleAtFixedRate(mSeekbarProgressUpdateTask, 0, 100, TimeUnit.MILLISECONDS)
 
                 mPlayer!!.setOnCompletionListener(MediaPlayer.OnCompletionListener {
                     imgViewPlay.setImageResource(R.drawable.ic_play_circle)
@@ -530,6 +542,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
 
         }
     }
+
 
 
 }
