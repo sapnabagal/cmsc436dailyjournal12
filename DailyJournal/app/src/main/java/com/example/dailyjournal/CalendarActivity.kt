@@ -42,7 +42,7 @@ class CalendarActivity : AppCompatActivity(){
 
 
         if(dataItemDao.dateMin() != null && dataItemDao.dateMax() != null){
-            binding.overviewCalendar.setup(dataItemDao.dateMin()!!.yearMonth, dataItemDao.dateMax()!!.yearMonth,DayOfWeek.values().first())
+            binding.overviewCalendar.setup(dataItemDao.dateMin()!!.yearMonth, YearMonth.now(),DayOfWeek.values().first())
         }else{
             binding.overviewCalendar.setup(YearMonth.now(), YearMonth.now(),DayOfWeek.values().first())
 
