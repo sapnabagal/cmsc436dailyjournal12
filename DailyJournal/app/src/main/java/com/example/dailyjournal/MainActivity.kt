@@ -197,7 +197,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
 
                     var intent = Intent()
                     intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
                     startActivityForResult(Intent.createChooser(intent, "Pick an image"), PICK_IMAGE_ROM_GALLERY)
 
                 }
@@ -232,7 +232,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
 
                     var intent = Intent()
                     intent.setType("video/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
                     startActivityForResult(Intent.createChooser(intent, "Pick a video"), PICK_VIDEO_FROM_GALLERY)
 
                 }
