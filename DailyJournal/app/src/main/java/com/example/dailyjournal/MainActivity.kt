@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -14,7 +15,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
@@ -28,6 +28,7 @@ import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.Size
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.IOException
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -55,6 +56,8 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
     private val events = mutableMapOf<LocalDate, List<ListItem>>()
     private var eventAdapter = Adapter(this)
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var mPlayer: MediaPlayer
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
@@ -131,8 +134,31 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         audioFab.setOnClickListener {
             //TODO: open activity to record audio
 
-            events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(selectedDate))
-            updateAdapterForDate(selectedDate)
+            try {
+                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                            arrayOf<String>(
+                                    Manifest.permission.RECORD_AUDIO,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ),
+                            RECORD_AUDIO
+                    )
+                } else {
+
+                    var intent = Intent(activity, AudioActivity::class.java);
+                    Log.i(TAG, "starting audio activity")
+                    startActivityForResult(intent, RECORD_AUDIO)
+
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            //events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(Uri.EMPTY, "test audio string", selectedDate))
+            //updateAdapterForDate(selectedDate)
             audioFab.hide()
             mediaFab.hide()
             textFab.hide()
@@ -357,6 +383,26 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                     updateAdapterForDate(selectedDate)
                 }
             }
+            RECORD_AUDIO->{
+                if(resultCode== Activity.RESULT_OK){
+                    Log.i(TAG, "audio result OK")
+                    if(data == null){
+                        Log.i(TAG, "data returned is null")
+                        events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(Uri.EMPTY, "test audio string", selectedDate))
+                        updateAdapterForDate(selectedDate)
+                        return;
+                    }
+                    var audioData : Uri = data.data!!;
+                    var filename : String? = data.getStringExtra("AUDIO_FILENAME")
+
+                    events[selectedDate] = events[selectedDate].orEmpty().plus(AudioType(audioData, filename!!, selectedDate))
+
+                    updateAdapterForDate(selectedDate)
+                }
+
+
+
+            }
         }
     }
 
@@ -367,6 +413,7 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
         val PICK_VIDEO_FROM_GALLERY = 3
         val RES_IMAGE = 100
         var INTENT_DATA = "course.labs.locationlab.placerecord.IntentData"
+        var RECORD_AUDIO = 4;
 
     }
 
@@ -419,6 +466,65 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
             alertadd.setNeutralButton("Close") { dlg, sumthin -> }
 
             alertadd.show()
+        }
+        else if(data.getListItemType()==1){
+            var audio = data as AudioType
+            var fileName = data.audioFile
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_audio, null)
+            val seekBar = view.findViewById<SeekBar>(R.id.seekBar)
+            var imgViewPlay = view.findViewById<ImageView>(R.id.imgViewPlay)
+            var lastProgress = 0;
+            var isPlaying = false;
+
+            imgViewPlay.setOnClickListener { v ->
+
+                mPlayer = MediaPlayer()
+                try {
+                    mPlayer!!.setDataSource(fileName)
+                    mPlayer!!.prepare()
+                    mPlayer!!.start()
+                } catch (e: IOException) {
+                    Log.e("LOG_TAG", "prepare() failed")
+                }
+
+                //making the imageView pause button
+
+                imgViewPlay.setImageResource(R.drawable.ic_pause_circle)
+
+                seekBar.progress = lastProgress
+                mPlayer!!.seekTo(lastProgress)
+                seekBar.max = mPlayer!!.duration
+                seekBar.progress = mPlayer!!.currentPosition
+                lastProgress = mPlayer!!.currentPosition
+
+                mPlayer!!.setOnCompletionListener(MediaPlayer.OnCompletionListener {
+                    imgViewPlay.setImageResource(R.drawable.ic_play_circle)
+                    mPlayer!!.seekTo(0)
+                })
+
+                seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                        if (mPlayer != null && fromUser) {
+                            mPlayer!!.seekTo(progress)
+                            lastProgress = progress
+                        }
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {}
+                })
+            }
+
+
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> }
+
+            alertadd.show()
+
         }
     }
 
