@@ -1,38 +1,26 @@
 package com.example.dailyjournal
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.os.Parcelable
-import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dailyjournal.databinding.ActivityCalendarBinding
 import com.example.dailyjournal.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kizitonwose.calendarview.CalendarView
@@ -41,13 +29,10 @@ import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.Size
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-import java.time.temporal.WeekFields
-import java.util.*
 
 
 class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
@@ -397,6 +382,47 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
     override fun onItemClick(data: ListItem) {
         //TODO make a activity to preview the data
         Toast.makeText(activity,"PREVIEW",Toast.LENGTH_SHORT).show();
+        if (data.getListItemType()==4){
+            var image = data as PicType
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_image, null)
+            val imageView = view.findViewById<ImageView>(R.id.image_large)
+            imageView.setImageURI(image.image)
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> }
+
+            alertadd.show()
+        }
+        else if (data.getListItemType()==2){
+            var vid = data as VidType
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_video, null)
+            val vidView = view.findViewById<VideoView>(R.id.video_large)
+            vidView.setVideoURI(vid.video)
+            vidView.start()
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> vidView.stopPlayback()}
+
+            alertadd.show()
+        }
+        else if (data.getListItemType()==3){
+            var text = data as TextType
+
+            val alertadd = android.app.AlertDialog.Builder(activity)
+            val factory = LayoutInflater.from(activity)
+            val view: View = factory.inflate(R.layout.view_text, null)
+            val textView = view.findViewById<TextView>(R.id.text_large)
+            textView.text = text.inputText
+
+            alertadd.setView(view)
+            alertadd.setNeutralButton("Close") { dlg, sumthin -> }
+
+            alertadd.show()
+        }
     }
 
 
