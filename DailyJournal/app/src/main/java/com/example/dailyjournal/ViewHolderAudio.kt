@@ -6,7 +6,9 @@ import com.chauthai.swipereveallayout.SwipeRevealLayout
 
 class ViewHolderAudio(itemView: View) : ViewHolder(itemView) {
 
+
     override fun bindType(item: ListItem) {
+
     }
 
     override fun getDelete(): View {

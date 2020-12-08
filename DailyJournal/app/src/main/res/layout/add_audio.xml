@@ -55,7 +55,7 @@
             android:textSize="18sp"
             android:gravity="center"
             android:layout_gravity="center"
-            android:text="This is Audio"
+            android:text="Click to hear an audio recording"
             android:textColor="@android:color/black"/>
     </RelativeLayout>
 </com.chauthai.swipereveallayout.SwipeRevealLayout>
