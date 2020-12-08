@@ -319,7 +319,18 @@ class MainActivity : Fragment(R.layout.activity_main), OnItemClickListener{
                     monthText.text = monthFormatter.format(day.date)
 
                     dateText.setTextColor(view.context.getColor(if (day.date == selectedDate) R.color.pink else R.color.white))
-                    selectView.isVisible = day.date == selectedDate
+                    if(day.date == selectedDate){
+                        selectView.setBackgroundColor(view.context.getColor(R.color.pink))
+                        selectView.isVisible = true
+                    }else{
+                        if(dataItemDao.dateExists(day.date)){
+                            selectView.isVisible = true
+                            selectView.setBackgroundColor(view.context.getColor(R.color.white))
+                        }else{
+                            selectView.isVisible = false
+                        }
+
+                    }
 
                 }
         }

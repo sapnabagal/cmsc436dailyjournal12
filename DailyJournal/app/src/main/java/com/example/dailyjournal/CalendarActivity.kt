@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentTransaction
+import com.example.dailyjournal.database.AppDatabase
+import com.example.dailyjournal.database.DataItemDao
 import com.example.dailyjournal.databinding.ActivityCalendarBinding
 import com.example.dailyjournal.databinding.CalendarDay2Binding
 import com.example.dailyjournal.databinding.CalendarMonthHeader2Binding
@@ -28,9 +30,12 @@ class CalendarActivity : AppCompatActivity(){
     private lateinit var binding: ActivityCalendarBinding
     private var selectedDate : LocalDate? = null
     private val today = LocalDate.now()
+    private lateinit var dataItemDao: DataItemDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val appDatabase = AppDatabase.getInstance(this)
+        dataItemDao = appDatabase.dataItemDao()
         //setContentView(R.layout.activity_calendar)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_calendar)
 
@@ -86,11 +91,21 @@ class CalendarActivity : AppCompatActivity(){
                         }
                         today -> {
                             textView.setTextColor(Color.parseColor("#ff0066"))
-                            textView.background = null
+                            if(dataItemDao.dateExists(day.date)){
+                                textView.setBackgroundResource(R.drawable.entry)
+                            }else{
+                                textView.background = null
+
+                            }
                         }
                         else -> {
                             textView.setTextColor(Color.parseColor("#000000"))
-                            textView.background = null
+                            if(dataItemDao.dateExists(day.date)){
+                                textView.setBackgroundResource(R.drawable.entry)
+                            }else{
+                                textView.background = null
+
+                            }
                         }
 
                     }
