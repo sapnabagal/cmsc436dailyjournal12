@@ -4,6 +4,8 @@ import android.view.View
 import android.widget.TextView
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 
+/* Specific ViewHolder for Text type in recyclerView. */
+
 class ViewHolderText(itemView: View) : ViewHolder(itemView) {
 
     lateinit var text : TextView

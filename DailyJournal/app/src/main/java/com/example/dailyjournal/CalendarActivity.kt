@@ -24,7 +24,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 
-
+/* Activity to show monthly calendar view. Connects to Database to hold all individual day information */
 class CalendarActivity : AppCompatActivity(){
 
     private lateinit var binding: ActivityCalendarBinding

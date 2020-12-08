@@ -3,6 +3,9 @@ package com.example.dailyjournal
 import java.time.LocalDate
 import java.time.LocalTime
 
+/* Class to represent Text ListItem type.
+  Contains local timestamp of creation, date attached to, and String content */
+
 class TextType(text: String, date: LocalDate, time: LocalTime): ListItem{
 
     private var id: Int = 0

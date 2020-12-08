@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 
+/* Abstract class for recyclerView to be able to hold all different types of content */
 
 abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
